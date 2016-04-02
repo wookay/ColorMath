@@ -1,6 +1,6 @@
 module ColorMath
 
-import Base: +, *, /, ==, hex
+import Base: +, -, *, /, ==, hex
 
 export RGB, HSB, CMYK, rgb255, red, green, blue, clear, alpha
 export white, black, gray
@@ -13,7 +13,11 @@ include("types.jl")
 include("colors.jl")
 
 function +(lhs::RGB, rhs::RGB)
-    RGB(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b, lhs.a + rhs.a)
+    RGB(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b, lhs.a)
+end
+
+function -(lhs::RGB, rhs::RGB)
+    RGB(lhs.r - rhs.r, lhs.g - rhs.g, lhs.b - rhs.b, lhs.a)
 end
 
 *(lhs::RGB, m::Int) = RGB(m * lhs.r, m * lhs.g, m * lhs.b, lhs.a)
@@ -31,7 +35,10 @@ end
 
 
 function hex(lhs::RGB)
-    rounddown(n::Float16) = uppercase(hex(round(Int, 0xffn, RoundDown)))
+    function rounddown(n::Float16)
+        n = n<0 ? 0.0 : n
+        uppercase(hex(round(Int, 0xffn, RoundDown), 2))
+    end
     string("#", rounddown(lhs.r), rounddown(lhs.g), rounddown(lhs.b))
 end
 
